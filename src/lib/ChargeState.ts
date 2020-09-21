@@ -1,0 +1,47 @@
+export type ChargingState = 'Disconnected' | 'Stopped' | 'Complete' | 'asleep' | 'Charging';
+
+export interface ChargeState {
+  battery_heater_on: boolean;
+  battery_level: number;
+  battery_range: number;
+  charge_current_request: number;
+  charge_current_request_max: number;
+  charge_enable_request: boolean;
+  charge_energy_added: number;
+  charge_limit_soc: number;
+  charge_limit_soc_max: number;
+  charge_limit_soc_min: number;
+  charge_limit_soc_std: number;
+  charge_miles_added_ideal: number;
+  charge_miles_added_rated: number;
+  charge_port_cold_weather_mode: boolean;
+  charge_port_door_open: boolean;
+  charge_port_latch: string;
+  charge_rate: number;
+  charge_to_max_range: boolean;
+  charger_actual_current: number;
+  charger_phases: null;
+  charger_pilot_current: number;
+  charger_power: number;
+  charger_voltage: number;
+  charging_state: ChargingState;
+  conn_charge_cable: string;
+  est_battery_range: number;
+  fast_charger_brand: string;
+  fast_charger_present: boolean;
+  fast_charger_type: string;
+  ideal_battery_range: number;
+  managed_charging_active: boolean;
+  managed_charging_start_time: null;
+  managed_charging_user_canceled: boolean;
+  max_range_charge_counter: number;
+  minutes_to_full_charge: number;
+  not_enough_power_to_heat: null;
+  scheduled_charging_pending: boolean;
+  scheduled_charging_start_time: null;
+  time_to_full_charge: number;
+  timestamp: number;
+  trip_charging: boolean;
+  usable_battery_level: number;
+  user_charge_enable_request: null;
+}
