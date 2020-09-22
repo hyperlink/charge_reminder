@@ -5,7 +5,6 @@ import ms from 'ms';
 import TeslaRepository, { VehicleAsleepError } from './lib/TeslaRepository';
 import sendMessage from './lib/sendPushover';
 import Vehicle from './lib/Vehicle';
-import { ChargingState } from './lib/ChargeState';
 import Spinner from './lib/Spinner';
 import { MissingTokenError } from './lib/TokenManager';
 import Config from './lib/Config';
@@ -25,10 +24,6 @@ const WAKING_UP_MESSAGE = 'Waking up vehicle';
 
 const vehicleId = config.getSelectedVehicleId();
 let vehicle: Vehicle;
-
-const chargeStateMapping = {
-  `${ChargingState.}`
-}
 
 async function start() {
   try {
