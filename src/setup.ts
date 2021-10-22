@@ -23,11 +23,16 @@ const cli = meow(`
 
     Options
       --revoke, -r  revoke token and delete all data
+      --select, -s  select a different vehicle
 `, {
   flags: {
     revoke: {
       type: 'boolean',
       alias: 'r'
+    },
+    select: {
+      type: 'boolean',
+      alias: 's'
     },
     pushover: {
       type: 'boolean'
@@ -41,6 +46,8 @@ if (cli.flags.pushover) {
   setupPushover();
 } else if (cli.flags.revoke) {
   revoke().catch(error => console.error('revoke error', error));
+} else if (cli.flags.select) {
+  setupVehicle().catch(error => console.error('setupVehicle error', error));
 } else {
   setup().catch(error => console.error(error, error.options, error.response));
 }
@@ -147,36 +154,39 @@ async function setup() {
   `);
     const info = await promptForUserAccount();
     await tokenManager.requestNewToken(info);
-    await tesla.initiaize();
-
-    const vehicles = await spinner.promise(tesla.listVehicles(), 'Getting list of vehicles...');
-    let selectedVehicle: Vehicle;
-
-    if (vehicles.count > 1) {
-      console.log('You have multiple vehicles congratulations!');
-      const choices: InquirerChoice[] = [];
-
-      for (const vehicle of vehicles.response) {
-        choices.push({
-          name: vehicle.display_name,
-          value: vehicle.id_s
-        });
-      }
-      const { vehicleId } = await inquirer.prompt({
-        type: 'list',
-        name: 'vehicleId',
-        message: 'select your vehicle to track',
-        choices
-      });
-      selectedVehicle = _.find(vehicles.response, { id_s: vehicleId });
-    } else {
-      selectedVehicle = vehicles.response[0];
-    }
-
-    config.saveSelectedVehicleId(selectedVehicle.id_s);
-    config.saveVehicle(selectedVehicle.id_s, selectedVehicle);
-    spinner.succeed('Finished setting up ' + selectedVehicle.display_name);
+    await setupVehicle();
   }
+}
+
+async function setupVehicle(): Promise<void> {
+  await tesla.initiaize();
+  const vehicles = await spinner.promise(tesla.listVehicles(), 'Getting list of vehicles...');
+  let selectedVehicle: Vehicle;
+
+  if (vehicles.count > 1) {
+    console.log('You have multiple vehicles congratulations!');
+    const choices: InquirerChoice[] = [];
+
+    for (const vehicle of vehicles.response) {
+      choices.push({
+        name: vehicle.display_name,
+        value: vehicle.id_s
+      });
+    }
+    const { vehicleId } = await inquirer.prompt({
+      type: 'list',
+      name: 'vehicleId',
+      message: 'select your vehicle to track',
+      choices
+    });
+    selectedVehicle = _.find(vehicles.response, { id_s: vehicleId });
+  } else {
+    selectedVehicle = vehicles.response[0];
+  }
+
+  config.saveSelectedVehicleId(selectedVehicle.id_s);
+  config.saveVehicle(selectedVehicle.id_s, selectedVehicle);
+  spinner.succeed('Finished setting up ' + selectedVehicle.display_name);
 }
 
 interface InquirerChoice {

@@ -38,8 +38,11 @@ export default class TeslaRepository {
       const { response } = await this.authedRequest.get(`api/1/vehicles/${vehicleId}/data_request/charge_state`).json<ChargeStateResponse>();
       return response;
     } catch (error) {
-      const responseBody = error.response.body;
-      if (responseBody.error == 'vehicle unavailable: {:error=>\"vehicle unavailable:\"}') {
+      const { statusCode, body } = error.response;
+      if (statusCode === 404) {
+        throw new VehicleNotFoundError(`Vehicle id: ${vehicleId} returned 404 error`);
+      }
+      if (body.error == 'vehicle unavailable: {:error=>\"vehicle unavailable:\"}') {
         throw new VehicleAsleepError();
       }
       throw error;
@@ -48,3 +51,4 @@ export default class TeslaRepository {
 }
 
 export class VehicleAsleepError extends Error { }
+export class VehicleNotFoundError extends Error { }

@@ -2,7 +2,7 @@
 
 import Debug from 'debug';
 import ms from 'ms';
-import TeslaRepository, { VehicleAsleepError } from './lib/TeslaRepository';
+import TeslaRepository, { VehicleAsleepError, VehicleNotFoundError } from './lib/TeslaRepository';
 import sendMessage from './lib/sendPushover';
 import Vehicle from './lib/Vehicle';
 import Spinner from './lib/Spinner';
@@ -51,6 +51,12 @@ async function start() {
       await spinner.promise(wakeUpVehicle(), WAKING_UP_MESSAGE);
       const status = await spinner.promise(checkChargeState(vehicleId), CHECK_CHARGE_STATE_MESSAGE);
       reportChargeState(status);
+    } else if (error instanceof VehicleNotFoundError) {
+      console.error(`${vehicle.id_s} is invalid id for ${vehicle.display_name}. Tesla API reports "not found".
+
+To select a vehicle run "charge-reminder-setup -s"`);
+    } else {
+      throw error;
     }
   }
 }
