@@ -1,6 +1,6 @@
 {
   "name": "@hyperlink/tesla-charge-reminder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI app to remind you to plug in your electric car",
   "main": "dist/index.js",
   "bin": {
